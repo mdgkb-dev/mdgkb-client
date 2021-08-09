@@ -1,28 +1,32 @@
 <template>
   <el-container direction="vertical">
     <div class="header-center">
-      <h3>Сведения об организациях в сфере охраны здоровья</h3>
+      <h2>Сведения об организациях в сфере охраны здоровья</h2>
     </div>
     <el-input prefix-icon="el-icon-search" v-model="filter" placeholder="Найти организацию" class="filter" size="large" />
     <el-collapse v-model="activeName" accordion>
-      <template v-for="organization in list" :key="organization.id">
-        <el-collapse-item>
+      <template v-for="(organization, item) in list" :key="organization.id">
+        <el-collapse-item :name="item + 1">
           <template #title>
-            <h4 class="collapseHeader">{{ organization.name }}</h4>
+            <h3 class="collapseHeader">{{ organization.name }}</h3>
           </template>
           <el-row class="collapse-content-container">
             <el-col>
-              <h4>Телефоны:</h4>
-              <div v-for="phone in organization?.contactInfo?.telephoneNumbers" :key="phone">
-                <span v-if="phone.description"> {{ phone.description }} : </span>
-                <span>{{ phone.number }}</span>
+              <div v-if="organization?.contactInfo?.telephoneNumbers?.length">
+                <h4>Телефоны:</h4>
+                <div v-for="phone in organization?.contactInfo?.telephoneNumbers" :key="phone">
+                  <span v-if="phone.description"> {{ phone.description }} : </span>
+                  <span>{{ phone.number }}</span>
+                </div>
               </div>
-              <h4>Адреса:</h4>
-              <div v-for="address in organization?.contactInfo?.postAddresses" :key="address">
-                <span v-if="address.description"
-                  ><b>{{ address.description }} :</b>
-                </span>
-                <span> {{ address.address }}</span>
+              <div v-if="organization?.contactInfo?.postAddresses?.length">
+                <h4>Адреса:</h4>
+                <div v-for="address in organization?.contactInfo?.postAddresses" :key="address">
+                  <span v-if="address.description"
+                    ><b>{{ address.description }} :</b>
+                  </span>
+                  <span> {{ address.address }}</span>
+                </div>
               </div>
             </el-col>
           </el-row>
@@ -87,42 +91,5 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.header-center {
-  text-align: center;
-}
-.filter {
-  border-radius: 20px;
-  width: 70%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 40px;
-}
-
-.collapseHeader {
-  padding-left: 10px;
-  line-height: 15px;
-}
-
-.el-collapse-item {
-  background-color: white;
-  margin-bottom: 20px;
-  padding: 4px;
-  border-radius: 10px;
-  width: 100%;
-  box-sizing: border-box;
-}
-:deep(.el-collapse-item__wrap) {
-  border-bottom: none;
-}
-
-:deep(.el-collapse-item__header) {
-  height: 32px;
-}
-:deep(.el-collapse-item__header, .el-collapse-item__wrap) {
-  border: none;
-}
-
-.collapse-content-container {
-  margin-left: 10px;
-}
+@import '@/assets/styles/elements/collapse.scss';
 </style>

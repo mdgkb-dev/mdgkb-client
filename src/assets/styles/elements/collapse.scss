@@ -1,0 +1,44 @@
+div {
+  font-size: 14px;
+}
+h4 {
+  margin-bottom: 0;
+}
+.header-center {
+  text-align: center;
+}
+.filter {
+  border-radius: 20px;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40px;
+}
+
+.collapseHeader {
+  padding-left: 10px;
+  line-height: 15px;
+}
+
+.el-collapse-item {
+  background-color: white;
+  margin-bottom: 20px;
+  padding: 4px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+:deep(.el-collapse-item__wrap) {
+  border-bottom: none;
+}
+
+:deep(.el-collapse-item__header) {
+  height: 50 px;
+}
+:deep(.el-collapse-item__header, .el-collapse-item__wrap) {
+  border: none;
+}
+
+.collapse-content-container {
+  margin-left: 10px;
+}

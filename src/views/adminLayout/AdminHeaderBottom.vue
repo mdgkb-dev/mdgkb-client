@@ -1,17 +1,23 @@
 <template>
   <div class="admin-header-bottom">
     <h4>{{ pageTitle }}</h4>
+    <!-- <el-page-header @back="goBack" title="" :content="pageTitle" /> -->
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 export default defineComponent({
   setup() {
     const store = useStore();
+    const router = useRouter();
     const pageTitle = computed(() => store.getters['admin/pageTitle']);
-    return { pageTitle };
+    const goBack = () => {
+      router.go(-1);
+    }
+    return { pageTitle, goBack };
   },
 });
 </script>

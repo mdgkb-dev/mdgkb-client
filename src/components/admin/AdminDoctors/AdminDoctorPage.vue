@@ -1,5 +1,7 @@
 <template>
   <el-form ref="form" :model="doctor" label-position="top" :rules="rules">
+    {{ doctor.fileInfo }}
+    {{ doctor.fileInfoId }}
     <el-row :gutter="40">
       <el-col :xs="24" :sm="24" :md="14" :lg="16" :xl="19">
         <el-container direction="vertical">
@@ -48,27 +50,18 @@
             </el-form-item>
           </el-card>
 
-          <AdminDoctorImage
-            v-if="mounted"
-            :file-list="fileList"
-            :file-info="doctor.fileInfo"
-            title="Загрузить фото"
-            @toggleUpload="toggleUpload"
-            @handlePictureCardPreview="handlePictureCardPreview"
-          />
+          <AdminDoctorImage v-if="mounted" title="Загрузить фото" />
         </el-container>
       </el-col>
     </el-row>
   </el-form>
 
-  <el-dialog v-model="isCropOpen" title="Кроппер" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
-    <ImageCropper :src="imageCropSrc" :ratio="1" @save="saveFromCropper" @cancel="cancelCropper" />
-  </el-dialog>
+  <ImageCropper />
 </template>
 
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-import { computed, defineComponent, onBeforeMount, onMounted, Ref, ref } from 'vue';
+import { computed, defineComponent, onBeforeMount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
@@ -77,8 +70,6 @@ import Doctor from '@/classes/doctors/Doctor';
 import DoctorRules from '@/classes/doctors/DoctorRules';
 import AdminDoctorImage from '@/components/admin/AdminDoctors/AdminDoctorImage.vue';
 import ImageCropper from '@/components/admin/ImageCropper.vue';
-import IFile from '@/interfaces/files/IFile';
-import IFilesList from '@/interfaces/files/IFIlesList';
 import validate from '@/mixinsAsModules/validate';
 
 export default defineComponent({
@@ -98,35 +89,6 @@ export default defineComponent({
     const loadDivisionOptions = async (): Promise<void> => {
       await store.dispatch('divisions/getAll');
       divisionOptions.value = store.getters['divisions/divisions'];
-    };
-
-    // Doctor image loading
-    let fileList: Ref<IFilesList[]> = ref([]);
-    let imageCropSrc = ref('');
-    let isCropOpen = ref(false);
-    const fileToUpload = () => {
-      if (doctor.value.fileInfo?.fileSystemPath) {
-        fileList.value.push({ name: doctor.value.fileInfo, url: doctor.value.fileInfo.getImageUrl() });
-        console.log('check', doctor.value.fileInfo.getImageUrl());
-      }
-    };
-    const toggleUpload = (url: string) => {
-      imageCropSrc.value = url;
-      isCropOpen.value = true;
-    };
-    const handlePictureCardPreview = (file: IFile) => {
-      imageCropSrc.value = file.url;
-      isCropOpen.value = true;
-    };
-    const saveFromCropper = (file: IFile) => {
-      doctor.value.fileInfo.file = file.blob;
-      doctor.value.fileInfo.category = 'previewFile';
-      fileList.value = [];
-      isCropOpen.value = false;
-      fileList.value.push({ name: doctor.value.fileInfo.fileSystemPath, url: file.src });
-    };
-    const cancelCropper = () => {
-      isCropOpen.value = false;
     };
 
     // Submit
@@ -159,7 +121,6 @@ export default defineComponent({
       if (route.params['id']) {
         await store.dispatch('doctors/get', route.params['id']);
         store.commit('admin/setPageTitle', { title: doctor.value.human.getFullName(), saveButton: true });
-        fileToUpload();
       } else {
         store.commit('doctors/set', new Doctor());
         store.commit('admin/setPageTitle', { title: 'Добавить врача', saveButton: true });
@@ -179,14 +140,7 @@ export default defineComponent({
       doctor,
       divisionOptions,
       form,
-      fileList,
-      toggleUpload,
-      handlePictureCardPreview,
-      isCropOpen,
-      saveFromCropper,
-      cancelCropper,
       mounted,
-      imageCropSrc,
     };
   },
 });

@@ -1,7 +1,9 @@
 import { MutationTree } from 'vuex';
 
 import Doctor from '@/classes/doctors/Doctor';
+import FileInfo from '@/classes/File/FileInfo';
 import IDoctor from '@/interfaces/doctors/IDoctor';
+import IFile from '@/interfaces/files/IFile';
 import IFileInfo from '@/interfaces/files/IFileInfo';
 
 import { State } from './state';
@@ -12,6 +14,7 @@ const mutations: MutationTree<State> = {
   },
   set(state, doctor: IDoctor) {
     state.doctor = new Doctor(doctor);
+    if (state.doctor.fileInfo.fileSystemPath) state.fileList[0] = state.doctor.fileInfo.getFileListObject();
   },
   setDivisionDoctors(state, doctors: IDoctor[]) {
     state.divisionDoctors = doctors?.map((a: IDoctor) => new Doctor(a));
@@ -45,6 +48,15 @@ const mutations: MutationTree<State> = {
     if (state.doctor) {
       state.doctor.fileInfo = fileInfo;
     }
+  },
+  saveFromCropper(state, file: IFile) {
+    state.doctor.fileInfo.file = file.blob;
+    state.doctor.fileInfo.category = 'previewFile';
+    state.fileList = [];
+    if (state.doctor.fileInfo.fileSystemPath) state.fileList.push({ name: state.doctor.fileInfo.fileSystemPath, url: file.src });
+  },
+  removeFileInfo(state) {
+    state.doctor.fileInfo = new FileInfo();
   },
 };
 

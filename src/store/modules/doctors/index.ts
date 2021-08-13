@@ -13,6 +13,7 @@ export const state: State = {
   filteredDoctors: [],
   doctor: new Doctor(),
   divisionDoctors: [],
+  fileList: [],
 };
 
 const namespaced = true;

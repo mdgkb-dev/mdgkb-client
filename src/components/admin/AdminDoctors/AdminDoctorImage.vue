@@ -22,7 +22,7 @@
           <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
         </div>
         <span class="el-upload-list__item-actions">
-          <span class="el-upload-list__item-preview" @click="$emit('handlePictureCardPreview', file)">
+          <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
             <i class="el-icon-zoom-in"></i>
           </span>
           <span class="el-upload-list__item-delete" @click="handleRemove(file)">
@@ -35,11 +35,10 @@
 </template>
 
 <script lang="ts">
-import '@vueup/vue-quill/dist/vue-quill.snow.css';
-
-import { defineComponent, PropType, ref } from 'vue';
+import { computed, defineComponent, Ref, ref } from 'vue';
 import { useStore } from 'vuex';
 
+import Cropper from '@/classes/cropper/Cropper';
 import FileInfo from '@/classes/File/FileInfo';
 import IFile from '@/interfaces/files/IFile';
 import IFilesList from '@/interfaces/files/IFIlesList';
@@ -47,26 +46,25 @@ import IFilesList from '@/interfaces/files/IFIlesList';
 export default defineComponent({
   name: 'AdminDoctorImage',
   props: {
-    fileList: {
-      type: Object as PropType<IFilesList[]>,
-      required: true,
-    },
-    fileInfo: {
-      type: Object as PropType<FileInfo>,
-      required: true,
-    },
     title: { type: String, required: true },
   },
-  emits: ['toggleUpload', 'handlePictureCardPreview'],
-  setup(props, { emit }) {
+  setup() {
     const store = useStore();
-    let showUpload = ref(props.fileList.length === 0);
+    const fileList: Ref<IFilesList[]> = computed(() => store.getters[`doctors/fileList`]);
+    const fileInfo: Ref<FileInfo> = computed(() => store.getters[`doctors/fileInfo`]);
+
     let uploader = ref();
+    let showUpload = ref(fileList.value.length === 0);
+
+    const openCropper = (file: IFile) => {
+      console.log('open', file);
+      store.commit('cropper/open', Cropper.CreateCropper(file.url, 'doctors', 'saveFromCropper', 1));
+    };
 
     const toggleUpload = (file: IFile) => {
       showUpload.value = !showUpload.value;
-      store.commit('doctors/setFileInfo', FileInfo.CreatePreviewFile(file, 'previewFile', props.fileInfo.id));
-      emit('toggleUpload', file.url);
+      store.commit('doctors/setFileInfo', FileInfo.CreatePreviewFile(file, 'previewFile', fileInfo.value.id));
+      openCropper(file);
     };
 
     const handleRemove = () => {
@@ -74,10 +72,18 @@ export default defineComponent({
       setTimeout(() => {
         showUpload.value = !showUpload.value;
       }, 800);
-      // store.commit('news/clearPreviewFile');
+      store.commit('doctors/removeFileInfo');
+    };
+
+    const handlePictureCardPreview = (file: IFile) => {
+      openCropper(file);
     };
 
     return {
+      handlePictureCardPreview,
+      openCropper,
+      fileList,
+      fileInfo,
       uploader,
       handleRemove,
       showUpload,

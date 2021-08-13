@@ -163,8 +163,14 @@ const mutations: MutationTree<State> = {
     }
   },
   saveFromCropperGallery(state, file: IFile) {
-    if (!state.newsItem.newsImages[state.curGalleryCropIndex].fileInfo) return;
+    const prevFileInfo = state.newsItem.newsImages[state.curGalleryCropIndex].fileInfo;
+    if (!prevFileInfo) return;
     const fileInfo = FileInfo.CreatePreviewFile(file, 'gallery');
+    fileInfo.fileSystemPath = prevFileInfo.fileSystemPath;
+
+    const i = state.newsItem.newsImagesNames.findIndex((i: string) => i === fileInfo.fileSystemPath);
+    if (i < 0 && fileInfo.fileSystemPath) state.newsItem.newsImagesNames.push(fileInfo.fileSystemPath);
+
     state.newsItem.newsImages[state.curGalleryCropIndex].fileInfo = fileInfo;
     if (fileInfo.fileSystemPath) {
       state.galleryList[state.curGalleryCropIndex] = {
@@ -172,6 +178,7 @@ const mutations: MutationTree<State> = {
         url: file.src,
       };
     }
+    console.log(state.newsItem.newsImages);
   },
   removeFromGallery(state, file: IFile) {
     const index = state.galleryList.findIndex((i) => i.name === file.name);

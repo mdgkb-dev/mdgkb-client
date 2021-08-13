@@ -55,7 +55,7 @@ export default defineComponent({
 
     const toggleUpload = (file: IFile) => {
       store.commit('news/pushToNewsImages', file);
-      store.commit('news/setCurGalleryCropIndex', fileList.value.length - 1);
+      store.commit('news/setCurGalleryCropIndex', fileList.value.length);
       openCropper(file);
     };
 

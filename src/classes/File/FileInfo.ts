@@ -39,6 +39,15 @@ export default class FileInfo implements IFileInfo {
     return fileInfo;
   }
 
+  static CreatePreviewFileWithoutNewFilePath(file: IFile, category: string, id?: string): IFileInfo {
+    const fileInfo = new FileInfo();
+    fileInfo.id = id;
+    fileInfo.originalName = file.name;
+    fileInfo.file = file.blob;
+    fileInfo.category = category;
+    return fileInfo;
+  }
+
   static CreateFileInfo(file: IFile): IFileInfo {
     const fileInfo = new FileInfo();
     fileInfo.originalName = file.name;

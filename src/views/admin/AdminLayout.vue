@@ -4,48 +4,53 @@
     <div class="admin-main-container">
       <AdminSideMenu class="side-menu hidden-sm-and-down" />
       <div class="admin-container">
-        <AdminHeaderBottom />
-        <div v-if="$route.meta.adminLayout === AdminLayout.TableList" style="height: inherit">
-          <slot />
-        </div>
-        <el-main v-else>
-          <template #default>
-            <slot />
-          </template>
-          <template #fallback>
-            <div>Loading...</div>
-          </template>
-        </el-main>
+        <!-- <AdminHeaderBottom /> -->
+        <slot />
+        <!-- <template #fallback> -->
+        <!-- <div>Loading...</div> -->
+        <!-- </template> -->
       </div>
     </div>
-    <AdminMenuDrawer />
+    <!-- <AdminMenuDrawer /> -->
   </div>
 </template>
 
 <script lang="ts">
 import { computed, ComputedRef, defineComponent } from 'vue';
+import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 
 import { AdminLayout } from '@/interfaces/admin/AdminLayout';
-import AdminHeaderBottom from '@/views/adminLayout/AdminHeaderBottom.vue';
 import AdminHeaderTop from '@/views/adminLayout/AdminHeaderTop.vue';
-import AdminMenuDrawer from '@/views/adminLayout/AdminMenuDrawer.vue';
 import AdminSideMenu from '@/views/adminLayout/AdminSideMenu.vue';
 
 export default defineComponent({
   name: 'AdminLayout',
   components: {
     AdminHeaderTop,
-    AdminHeaderBottom,
     AdminSideMenu,
-    AdminMenuDrawer,
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
     const store = useStore();
+    const route = useRoute();
     const isDrawerOpen: ComputedRef<boolean> = computed(() => store.getters['admin/isDrawerOpen']);
     const closeDrawer = () => store.commit('admin/closeDrawer');
+    const adminLayoutTable: ComputedRef<boolean> = computed(() => {
+      return route.meta.adminLayout === 'tableList';
+    });
 
-    return { isDrawerOpen, closeDrawer, AdminLayout };
+    return {
+      isDrawerOpen,
+      closeDrawer,
+      AdminLayout,
+      adminLayoutTable,
+    };
   },
 });
 </script>

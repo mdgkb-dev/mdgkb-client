@@ -1,6 +1,6 @@
 <template>
   <component :is="'AdminListWrapper'" v-if="mounted" show-header>
-    <template #header>
+    <!-- <template #header>
       <RemoteSearch :key-value="schema.vacancy.key" @select="selectSearch" />
       <FilterSelectDate :table="schema.vacancy.tableName" :col="schema.vacancy.date" placeholder="Дата публикации" @load="load" />
       <FilterMultipleSelect
@@ -41,7 +41,7 @@
         :filter-value="true"
         @load="loadVacancies"
       />
-    </template>
+    </template> -->
     <el-table v-if="vacancies" :data="vacancies">
       <el-table-column prop="title" label="Название" class-name="sticky-left" min-width="200">
         <template #default="scope">
@@ -141,71 +141,66 @@
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, Ref, ref } from 'vue';
+import { computed, ComputedRef, defineComponent, onBeforeMount, Ref, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 import FilterModel from '@/classes/filters/FilterModel';
 import Pagination from '@/components/admin/Pagination.vue';
 import TableButtonGroup from '@/components/admin/TableButtonGroup.vue';
-import FilterCheckbox from '@/components/Filters/FilterCheckbox.vue';
-import FilterMultipleSelect from '@/components/Filters/FilterMultipleSelect.vue';
-import FilterSelectDate from '@/components/Filters/FilterSelectDate.vue';
-import RemoteSearch from '@/components/RemoteSearch.vue';
-import SortList from '@/components/SortList/SortList.vue';
 import { DataTypes } from '@/interfaces/filters/DataTypes';
 import IFilterModel from '@/interfaces/filters/IFilterModel';
 import { Operators } from '@/interfaces/filters/Operators';
 import IForm from '@/interfaces/IForm';
 import ISearchObject from '@/interfaces/ISearchObject';
 import IVacancy from '@/interfaces/IVacancy';
-import createSortModels from '@/services/CreateSortModels';
-import Hooks from '@/services/Hooks/Hooks';
-import Provider from '@/services/Provider';
+import ISchema from '@/interfaces/schema/ISchema';
 import VacanciesFiltersLib from '@/services/Provider/libs/filters/VacanciesFiltersLib';
-import VacanciesSortsLib from '@/services/Provider/libs/sorts/VacanciesSortsLib';
 import AdminListWrapper from '@/views/adminLayout/AdminListWrapper.vue';
 
 export default defineComponent({
   name: 'AdminVacanciesList',
   components: {
-    FilterMultipleSelect,
-    FilterCheckbox,
-    FilterSelectDate,
     TableButtonGroup,
-    RemoteSearch,
-    SortList,
     Pagination,
     AdminListWrapper,
   },
   setup() {
-    const vacancies: ComputedRef<IVacancy[]> = computed(() => Provider.store.getters['vacancies/items']);
+    const vacancies: ComputedRef<IVacancy[]> = computed(() => store.getters['vacancies/items']);
     const isEditMode: Ref<boolean> = ref(false);
     const isNotEditMode: ComputedRef<boolean> = computed(() => !isEditMode.value);
-    const formPatterns: ComputedRef<IForm[]> = computed(() => Provider.store.getters['formPatterns/items']);
+    const formPatterns: ComputedRef<IForm[]> = computed(() => store.getters['formPatterns/items']);
+    const store = useStore();
+    const router = useRouter();
+    const mounted = ref(false);
+    const schema: ComputedRef<ISchema> = computed(() => store.getters['meta/schema']);
 
     const editMany = async () => {
-      Provider.store.commit('admin/showLoading');
-      await Provider.store.dispatch('formPatterns/getAll');
+      store.commit('admin/showLoading');
+      await store.dispatch('formPatterns/getAll');
       isEditMode.value = true;
-      Provider.store.commit('admin/closeLoading');
+      store.commit('admin/closeLoading');
     };
     const saveMany = async () => {
-      Provider.store.commit('admin/showLoading');
-      await Provider.store.dispatch('vacancies/updateMany');
+      store.commit('admin/showLoading');
+      await store.dispatch('vacancies/updateMany');
       isEditMode.value = false;
-      Provider.store.commit('admin/closeLoading');
+      store.commit('admin/closeLoading');
     };
 
     const loadVacancies = async () => {
-      await Provider.getAll('vacancies');
+      await store.dispatch('vacancies/getAll');
     };
     const filterByDivision: Ref<IFilterModel> = ref(new FilterModel());
     const load = async () => {
-      Provider.setSortList(...createSortModels(VacanciesSortsLib));
-      Provider.setSortModels(VacanciesSortsLib.byTitle());
+      // setSortList(...createSortModels(VacanciesSortsLib));
+      // setSortModels(VacanciesSortsLib.byTitle());
+      store.commit('admin/showLoading');
       await loadVacancies();
+      // await store.dispatch('meta/getSchema');
       filterByDivision.value = VacanciesFiltersLib.byDivisions([]);
-      await Provider.store.dispatch('meta/getOptions', Provider.schema.value.division);
-      Provider.store.commit('admin/setHeaderParams', {
+      // await store.dispatch('meta/getOptions');
+      store.commit('admin/setHeaderParams', {
         title: 'Вакансии',
         buttons: [
           { text: 'Сохранить', condition: isEditMode, action: saveMany },
@@ -213,29 +208,28 @@ export default defineComponent({
           { text: 'Создать вакансию', type: 'primary', action: create },
         ],
       });
+      store.commit('admin/closeLoading');
+      mounted.value = true;
     };
 
-    Hooks.onBeforeMount(load, {
-      pagination: { storeModule: 'vacancies', action: 'getAll' },
-      sortModels: [],
-    });
+    onBeforeMount(load);
 
     const remove = async (id: string) => {
-      await Provider.store.dispatch('vacancies/remove', id);
+      await store.dispatch('vacancies/remove', id);
     };
 
-    const create = () => Provider.router.push(`/admin/vacancies/new`);
+    const create = () => router.push(`/admin/vacancies/new`);
 
     const newResponsesExists = (): boolean => {
       return vacancies.value.some((vacancy: IVacancy) => vacancy.withNewResponses());
     };
 
     const setActive = async (vacancy: IVacancy) => {
-      await Provider.store.dispatch('vacancies/update', vacancy);
+      await store.dispatch('vacancies/update', vacancy);
     };
 
     const selectSearch = async (event: ISearchObject): Promise<void> => {
-      await Provider.router.push({ name: `AdminVacanciesEdit`, params: { id: event.id, slug: event.id } });
+      await router.push({ name: `AdminVacanciesEdit`, params: { id: event.id, slug: event.id } });
     };
 
     return {
@@ -248,11 +242,10 @@ export default defineComponent({
       newResponsesExists,
       selectSearch,
       DataTypes,
-      mounted: Provider.mounted,
-      schema: Provider.schema,
-      sortList: Provider.sortList,
+      mounted,
       isEditMode,
       formPatterns,
+      schema,
     };
   },
 });

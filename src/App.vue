@@ -1,13 +1,21 @@
 <template>
-  <Suspense>
-    <component :is="$route.meta.layout || 'MainLayout'">
+  <Suspense v-if="mounted">
+    <AdminLayout v-if="$route.meta && $route.meta.layout">
+      <el-main v-if="show">
+        <router-view />
+      </el-main>
+      <template v-else>
+        <router-view />
+      </template>
+    </AdminLayout>
+    <MainLayout v-else>
       <router-view />
-    </component>
+    </MainLayout>
   </Suspense>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch } from '@vue/runtime-core';
+import { computed, defineComponent, onMounted, Ref, ref, watch } from '@vue/runtime-core';
 import { onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
@@ -27,6 +35,11 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const route = useRoute();
+    const mounted: Ref<boolean> = ref(false);
+    const show = computed(() => {
+      console.log('route.meta', route.meta);
+      return route.meta && route.meta.adminLayout;
+    });
 
     watch(route, () => {
       changeDocumentTitle();
@@ -53,11 +66,14 @@ export default defineComponent({
       changeDocumentTitle();
       await store.dispatch('meta/getSchema');
       await store.dispatch('search/searchGroups');
+      mounted.value = true;
     });
 
     onMounted(() => {
       setLocalStorageToVuex();
     });
+
+    return { mounted, show };
   },
 });
 </script>

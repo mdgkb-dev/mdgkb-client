@@ -15,6 +15,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
+      adminLayout: true,
     },
   },
   {

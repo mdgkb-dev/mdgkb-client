@@ -23,7 +23,6 @@ import AdminResidencyCoursePage from '@/components/admin/AdminEducationalOrganiz
 import AdminResidencyCoursesList from '@/components/admin/AdminEducationalOrganization/AdminResidency/AdminResidencyCoursesList.vue';
 import AdminSpecializationPage from '@/components/admin/AdminEducationalOrganization/AdminSpecializations/AdminSpecializationPage.vue';
 import AdminSpecializationsList from '@/components/admin/AdminEducationalOrganization/AdminSpecializations/AdminSpecializationsList.vue';
-import { AdminLayout } from '@/interfaces/admin/AdminLayout';
 import { authGuard, isAuthorized } from '@/router/index';
 
 // import AdminDpoCoursePage from '@/components/admin/AdminEducationalOrganization/AdminDpoCourses/AdminPostgraduateCoursePage.vue';
@@ -63,7 +62,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      AdminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
   {
@@ -124,7 +123,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      adminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
   {
@@ -161,7 +160,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      adminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
   {
@@ -275,7 +274,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      adminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
   {
@@ -396,7 +395,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      adminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
   {

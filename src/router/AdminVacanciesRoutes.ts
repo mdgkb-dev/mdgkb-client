@@ -4,7 +4,6 @@ import AdminVacanciesList from '@/components/admin/AdminVacancies/AdminVacancies
 import AdminVacanciesPage from '@/components/admin/AdminVacancies/AdminVacanciesPage.vue';
 import AdminVacanciesResponsesList from '@/components/admin/AdminVacancies/AdminVacanciesResponsesList.vue';
 import AdminVacancyResponsePage from '@/components/admin/AdminVacancies/AdminVacancyResponsePage.vue';
-import { AdminLayout } from '@/interfaces/admin/AdminLayout';
 import { authGuard, isAuthorized } from '@/router/index';
 
 export default [
@@ -18,7 +17,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      adminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
   {
@@ -55,7 +54,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      adminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
   {

@@ -1,7 +1,6 @@
 import { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
 
 import AdminCommentList from '@/components/admin/AdminComments/AdminCommentList.vue';
-import { AdminLayout } from '@/interfaces/admin/AdminLayout';
 import { authGuard, isAuthorized } from '@/router/index';
 
 export default [
@@ -15,7 +14,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      adminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
 ];

@@ -2,7 +2,6 @@ import { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
 
 import AdminApplicationCarList from '@/components/admin/AdminApplicationCar/AdminApplicationCarList.vue';
 import AdminApplicationCarPage from '@/components/admin/AdminApplicationCar/AdminApplicationCarPage.vue';
-import { AdminLayout } from '@/interfaces/admin/AdminLayout';
 import { authGuard, isAuthorized } from '@/router/index';
 
 export default [
@@ -16,7 +15,7 @@ export default [
     },
     meta: {
       layout: 'AdminLayout',
-      adminLayout: AdminLayout.TableList,
+      adminLayout: true,
     },
   },
   {

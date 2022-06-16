@@ -3,8 +3,8 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import { setupElementPlusComponents, setupElementPlusPlugins } from '@/plugins/ElementPlus';
-import ru from 'element-plus/es/locale/lang/ru';
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
 
 import 'dayjs/locale/ru';
 import './assets/styles/element-variables.scss';
@@ -43,8 +43,7 @@ app.component('FontAwesomeIcon', FontAwesomeIcon);
 app.use(store);
 app.use(router);
 // app.use(YmapPlugin);
-app.use(setupElementPlusComponents, { locale: ru });
-app.use(setupElementPlusPlugins);
+app.use(ElementPlus);
 
 // locale.use(lang);
 Provider.router = router;
